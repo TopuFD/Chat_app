@@ -13,11 +13,12 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController email_controller = TextEditingController();
   TextEditingController pass_controller = TextEditingController();
   bool isAnimated = false;
+  Duration animationDuration = Duration(seconds: 2);
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(Duration(seconds: 3), () {
       setState(() {
         isAnimated = true;
       });
@@ -31,19 +32,20 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.only(top: 40.h,right: 15.w,left: 15.w),
+            padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.h),
             child: Stack(
-              alignment: AlignmentDirectional.topCenter,
               children: [
                 AnimatedPositioned(
-                    width: isAnimated ? mq.width * .6 : -mq.width * .5,
+                    top: mq.height * .10,
+                    left: isAnimated ? mq.width * .22 : -mq.width * .5,
+                    width: mq.width * .5,
                     child: Image.asset(
                       "images/logos.png",
                     ),
-                    duration: Duration(seconds: 1)),
+                    duration: animationDuration),
                 Positioned(
                   child: Container(
-                    margin: isAnimated?EdgeInsets.only(top: 200.h):EdgeInsets.only(top: 0.h),
+                    margin: isAnimated?EdgeInsets.only(top: 250.h):EdgeInsets.only(top: 50.h),
                     child: Column(
                       children: [
                         TextFormField(
@@ -70,7 +72,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Text(
                             "Forget Password?",
                             textAlign: TextAlign.end,
-                            style: TextStyle(fontSize: 18.sp, color: Colors.black),
+                            style:
+                                TextStyle(fontSize: 18.sp, color: Colors.black),
                           ),
                         ),
                         SizedBox(
@@ -78,8 +81,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         InkWell(
                           onTap: () {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (_) => HomeScreen()));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => HomeScreen()));
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -90,8 +95,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               padding: EdgeInsets.symmetric(vertical: 12.h),
                               child: Text(
                                 "Login",
-                                style:
-                                    TextStyle(fontSize: 22.sp, color: Colors.white),
+                                style: TextStyle(
+                                    fontSize: 22.sp, color: Colors.white),
                               ),
                             )),
                           ),
@@ -103,12 +108,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           text: TextSpan(children: [
                             TextSpan(
                                 text: "Don't have an account?",
-                                style:
-                                    TextStyle(fontSize: 18, color: Colors.black)),
+                                style: TextStyle(
+                                    fontSize: 18, color: Colors.black)),
                             TextSpan(
                                 text: "Sign Up",
-                                style:
-                                    TextStyle(fontSize: 23.sp, color: Colors.blue))
+                                style: TextStyle(
+                                    fontSize: 23.sp, color: Colors.blue))
                           ]),
                         ),
                         SizedBox(

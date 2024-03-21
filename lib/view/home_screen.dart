@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       floatingActionButton: CircleAvatar(
-        backgroundColor: Colors.blue,
+          backgroundColor: Colors.blue,
           child: IconButton(
               onPressed: () {},
               icon: Icon(
