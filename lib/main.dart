@@ -1,10 +1,19 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:my_chat/view/auth/splash_screen.dart';
+import 'package:my_chat/view/screen/splash_screen.dart';
 
-void main() async{
-  WidgetsFlutterBinding.ensureInitialized();
+void main() async {
+  await WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+    DeviceOrientation.portraitDown,
+    DeviceOrientation.portraitUp
+  ]);
+
   await Firebase.initializeApp();
   runApp(const MyApp());
 }
@@ -29,10 +38,9 @@ class MyApp extends StatelessWidget {
                 backgroundColor: Colors.white,
                 centerTitle: true,
                 titleTextStyle: TextStyle(
-                  fontSize: 20.sp,
-                  color: Colors.black,
-                  fontWeight: FontWeight.normal
-                )),
+                    fontSize: 20.sp,
+                    color: Colors.black,
+                    fontWeight: FontWeight.normal)),
             useMaterial3: true,
           ),
           home: child,

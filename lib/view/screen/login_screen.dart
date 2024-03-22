@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:my_chat/view/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -14,6 +16,28 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController pass_controller = TextEditingController();
   bool isAnimated = false;
   Duration animationDuration = Duration(seconds: 2);
+
+  _handleGoogle(){
+    _signInWithGoogle().then((value){
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>HomeScreen()));
+    } );
+  }
+  Future<UserCredential> _signInWithGoogle() async {
+  // Trigger the authentication flow
+  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+  // Obtain the auth details from the request
+  final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+  // Create a new credential
+  final credential = GoogleAuthProvider.credential(
+    accessToken: googleAuth?.accessToken,
+    idToken: googleAuth?.idToken,
+  );
+
+  // Once signed in, return the UserCredential
+  return await FirebaseAuth.instance.signInWithCredential(credential);
+}
 
   @override
   void initState() {
@@ -122,30 +146,33 @@ class _LoginScreenState extends State<LoginScreen> {
                         Padding(
                           padding: EdgeInsets.symmetric(vertical: 8.h),
                           child: Row(children: [
-                            Container(
-                              width: 150.w,
-                              padding: EdgeInsets.symmetric(
-                                vertical: 8.h,
-                              ),
-                              decoration: BoxDecoration(
-                                  color: Colors.blue,
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    "images/googleLogo.png",
-                                    width: 30.w,
-                                  ),
-                                  SizedBox(
-                                    width: 8.w,
-                                  ),
-                                  Text(
-                                    "Google",
-                                    style: TextStyle(
-                                        fontSize: 20, color: Colors.white),
-                                  )
-                                ],
+                            InkWell(
+                              onTap: _handleGoogle(),
+                              child: Container(
+                                width: 150.w,
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 8.h,
+                                ),
+                                decoration: BoxDecoration(
+                                    color: Colors.blue,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      "images/googleLogo.png",
+                                      width: 30.w,
+                                    ),
+                                    SizedBox(
+                                      width: 8.w,
+                                    ),
+                                    Text(
+                                      "Google",
+                                      style: TextStyle(
+                                          fontSize: 20, color: Colors.white),
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
                             SizedBox(
