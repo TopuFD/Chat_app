@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
+import 'package:my_chat/view/home_screen.dart';
 import 'package:my_chat/view/screen/login_screen.dart';
 
 // ignore: must_be_immutable
@@ -15,7 +17,13 @@ class Splash_screen extends StatelessWidget {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
       SystemChrome.setSystemUIOverlayStyle(
           const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
-      Navigator.push(context, MaterialPageRoute(builder: (_) => LoginScreen()));
+      if (FirebaseAuth.instance.currentUser != null) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => HomeScreen()));
+      } else {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => LoginScreen()));
+      }
     });
     return SafeArea(
         child: Scaffold(
