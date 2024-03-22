@@ -11,7 +11,7 @@ class Splash_screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Timer(Duration(seconds: 4), () {
+    Timer(Duration(milliseconds: 4500), () {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
       SystemChrome.setSystemUIOverlayStyle(
           const SystemUiOverlayStyle(statusBarColor: Colors.transparent));

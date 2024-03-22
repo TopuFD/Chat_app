@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,7 +24,14 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: CircleAvatar(
           backgroundColor: Colors.blue,
           child: IconButton(
-              onPressed: () {},
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut().then((value) {
+                  Navigator.pop(context);
+                });
+                await GoogleSignIn().signOut().then((value) {
+                  Navigator.pop(context);
+                });
+              },
               icon: Icon(
                 Icons.add_comment_rounded,
                 color: Colors.white,

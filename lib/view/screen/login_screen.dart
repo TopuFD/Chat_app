@@ -1,7 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:my_chat/auth/google_auth.dart';
+import 'package:my_chat/helper/utils.dart';
 import 'package:my_chat/view/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -15,29 +17,27 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController email_controller = TextEditingController();
   TextEditingController pass_controller = TextEditingController();
   bool isAnimated = false;
-  Duration animationDuration = Duration(seconds: 2);
+  Duration animationDuration = Duration(milliseconds: 1000);
+  SignInGoogle signInGoogle = SignInGoogle();
 
-  _handleGoogle(){
-    _signInWithGoogle().then((value){
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>HomeScreen()));
-    } );
+  _handleGoogle() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        Utility.showProgressBar(context);
+        signInGoogle.myGoogleService().then((value) {
+          Navigator.pop(context);
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        });
+      } else {
+        return Utility()
+            .myToast("Check Internet"); // Internet connection is not available
+      }
+    } on SocketException catch (_) {
+      return Utility().myToast("Check Internet"); // Error occurred, no internet connection
+    }
   }
-  Future<UserCredential> _signInWithGoogle() async {
-  // Trigger the authentication flow
-  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-  // Obtain the auth details from the request
-  final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-
-  // Create a new credential
-  final credential = GoogleAuthProvider.credential(
-    accessToken: googleAuth?.accessToken,
-    idToken: googleAuth?.idToken,
-  );
-
-  // Once signed in, return the UserCredential
-  return await FirebaseAuth.instance.signInWithCredential(credential);
-}
 
   @override
   void initState() {
@@ -69,7 +69,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     duration: animationDuration),
                 Positioned(
                   child: Container(
-                    margin: isAnimated?EdgeInsets.only(top: 250.h):EdgeInsets.only(top: 50.h),
+                    margin: isAnimated
+                        ? EdgeInsets.only(top: 250.h)
+                        : EdgeInsets.only(top: 50.h),
                     child: Column(
                       children: [
                         TextFormField(
@@ -97,19 +99,19 @@ class _LoginScreenState extends State<LoginScreen> {
                             "Forget Password?",
                             textAlign: TextAlign.end,
                             style:
-                                TextStyle(fontSize: 18.sp, color: Colors.black),
+                                TextStyle(fontSize: 18.sp, color: Colors.blue),
                           ),
                         ),
                         SizedBox(
                           height: 15.h,
                         ),
                         InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => HomeScreen()));
-                          },
+                          // onTap: () {
+                          //   Navigator.push(
+                          //       context,
+                          //       MaterialPageRoute(
+                          //           builder: (_) => HomeScreen()));
+                          // },
                           child: Container(
                             decoration: BoxDecoration(
                                 color: Colors.blue,
@@ -147,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           padding: EdgeInsets.symmetric(vertical: 8.h),
                           child: Row(children: [
                             InkWell(
-                              onTap: _handleGoogle(),
+                              onTap: _handleGoogle,
                               child: Container(
                                 width: 150.w,
                                 padding: EdgeInsets.symmetric(
