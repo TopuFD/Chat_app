@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:my_chat/model/data_model.dart';
 
+// ignore: must_be_immutable
 class MyUserCard extends StatefulWidget {
-  const MyUserCard({super.key});
+  final DataModel myUser;
+  MyUserCard({super.key,required this.myUser});
 
   @override
   State<MyUserCard> createState() => _MyUserCardState();
@@ -14,7 +17,7 @@ class _MyUserCardState extends State<MyUserCard> {
     return Card(
       elevation: 1.5,
       child: InkWell(
-        onTap: (){},
+        onTap: () {},
         child: ListTile(
           leading: CircleAvatar(
             backgroundColor: Colors.blue,
@@ -23,9 +26,9 @@ class _MyUserCardState extends State<MyUserCard> {
               color: Colors.white,
             ),
           ),
-          title: Text("Chat user card"),
+          title: Text(widget.myUser.name),
           subtitle: Text(
-            "This is massege",
+            widget.myUser.about,
             maxLines: 1,
           ),
           trailing: Text("12.25pm"),

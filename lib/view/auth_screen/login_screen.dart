@@ -1,8 +1,8 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_chat/auth/google_auth.dart';
+import 'package:my_chat/auth/user.dart';
 import 'package:my_chat/helper/utils.dart';
 import 'package:my_chat/view/home_screen.dart';
 
@@ -24,18 +24,24 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        Utility.showProgressBar(context);
         signInGoogle.myGoogleService().then((value) {
-          Navigator.pop(context);
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => HomeScreen()));
+          if ((Constant().existUser() == true)) {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => HomeScreen()));
+          } else {
+            Constant().createUser().then((value) {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => HomeScreen()));
+            });
+          }
         });
       } else {
         return Utility()
             .myToast("Check Internet"); // Internet connection is not available
       }
     } on SocketException catch (_) {
-      return Utility().myToast("Check Internet"); // Error occurred, no internet connection
+      return Utility()
+          .myToast("Check Internet"); // Error occurred, no internet connection
     }
   }
 
