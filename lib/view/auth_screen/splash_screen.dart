@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 import 'package:my_chat/view/home_screen.dart';
-import 'package:my_chat/view/screen/login_screen.dart';
+import 'package:my_chat/view/auth_screen/login_screen.dart';
 
 // ignore: must_be_immutable
 class Splash_screen extends StatelessWidget {
