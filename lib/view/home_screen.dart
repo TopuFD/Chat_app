@@ -1,8 +1,9 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:my_chat/auth/user.dart';
 import 'package:my_chat/model/data_model.dart';
+import 'package:my_chat/view/profile_screen.dart';
 import 'package:my_chat/widgets/user_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -33,21 +34,16 @@ class _HomeScreenState extends State<HomeScreen> {
         leading: IconButton(onPressed: () {}, icon: Icon(Icons.home)),
         actions: [
           IconButton(onPressed: () {}, icon: Icon(Icons.search)),
-          IconButton(onPressed: () {}, icon: Icon(Icons.more_vert)),
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => Profile_screen(myUser: dataList[0])));
+              },
+              icon: Icon(Icons.more_vert)),
         ],
       ),
-      floatingActionButton: CircleAvatar(
-          backgroundColor: Colors.blue,
-          child: IconButton(
-              onPressed: () async {
-                await Constant.firebaseAuth.signOut();
-                await GoogleSignIn().signOut();
-                Navigator.pop(context);
-              },
-              icon: Icon(
-                Icons.add_comment_rounded,
-                color: Colors.white,
-              ))),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
         child: RefreshIndicator(
