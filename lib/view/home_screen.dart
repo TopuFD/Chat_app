@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_chat/auth/user.dart';
@@ -27,6 +26,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void initState(){
+    super.initState();
+    Constant.selfInfo();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -39,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (_) => Profile_screen(myUser: dataList[0])));
+                        builder: (_) => Profile_screen(myUser: Constant.me)));
               },
               icon: Icon(Icons.more_vert)),
         ],
@@ -49,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: RefreshIndicator(
           onRefresh: _refresh,
           child: StreamBuilder(
-            stream: Constant.firebaseFirestore.collection("Users").snapshots(),
+            stream: Constant.getAllUser(),
             builder: (context, snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.waiting:

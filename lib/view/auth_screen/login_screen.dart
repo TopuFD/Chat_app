@@ -21,15 +21,17 @@ class _LoginScreenState extends State<LoginScreen> {
   SignInGoogle signInGoogle = SignInGoogle();
 
   _handleGoogle() async {
+    Utility.showProgressBar(context);
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         signInGoogle.myGoogleService().then((value) {
+          Navigator.pop(context);
           if ((Constant().existUser() == true)) {
             Navigator.push(
                 context, MaterialPageRoute(builder: (context) => HomeScreen()));
           } else {
-            Constant().createUser().then((value) {
+            Constant.createUser().then((value) {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => HomeScreen()));
             });

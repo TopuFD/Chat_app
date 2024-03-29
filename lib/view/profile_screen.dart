@@ -31,16 +31,45 @@ class _Profile_screenState extends State<Profile_screen> {
               color: Colors.grey.withAlpha(50),
               child: Column(
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(100),
-                    child: CachedNetworkImage(
-                      height: 150.h,
-                      imageUrl: widget.myUser.image,
-                      fit: BoxFit.fill,
-                      placeholder: (context, url) =>
-                          CircularProgressIndicator(),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
-                    ),
+                  Stack(
+                    children: [
+                      ClipRRect(
+                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                        borderRadius: BorderRadius.circular(100),
+                        child: CachedNetworkImage(
+                          height: 150.h,
+                          imageUrl: widget.myUser.image,
+                          fit: BoxFit.fill,
+                          placeholder: (context, url) =>SizedBox(
+                            height: 150.h,
+                            child: CircularProgressIndicator(),
+                          ),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
+                        ),
+                      ),
+                      Positioned(
+                        top: 100.h,left: 110.w,
+                        child: MaterialButton(
+                          height: 50.h,
+                          minWidth: 50.w,
+                          color: Colors.blue,
+                          elevation: 2,
+                          shape: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50),
+                            borderSide: BorderSide(
+                              width: 3.0.w,
+                              color: Colors.white
+                            )
+                          ),
+                          onPressed: (){
+                        
+                          },
+                          child: Icon(Icons.edit,color: Colors.white,),
+                          
+                          ),
+                      )
+                    ],
                   ),
                   SizedBox(
                     height: 10.h,
@@ -57,8 +86,16 @@ class _Profile_screenState extends State<Profile_screen> {
                         color: Color.fromARGB(58, 96, 125, 139),
                         child: Column(
                           children: [
-                            Text("2k",style: TextStyle(fontSize: 20.sp,color: Colors.black),),
-                            Text("Followers",style: TextStyle(fontSize: 17.sp,color: Colors.black54),),
+                            Text(
+                              "2k",
+                              style: TextStyle(
+                                  fontSize: 20.sp, color: Colors.black),
+                            ),
+                            Text(
+                              "Followers",
+                              style: TextStyle(
+                                  fontSize: 17.sp, color: Colors.black54),
+                            ),
                           ],
                         ),
                       ),
@@ -67,15 +104,22 @@ class _Profile_screenState extends State<Profile_screen> {
                         color: Color.fromARGB(58, 96, 125, 139),
                         child: Column(
                           children: [
-                            Text("751",style: TextStyle(fontSize: 20.sp,color: Colors.black),),
-                            Text("Following",style: TextStyle(fontSize: 17.sp,color: Colors.black54),),
+                            Text(
+                              "751",
+                              style: TextStyle(
+                                  fontSize: 20.sp, color: Colors.black),
+                            ),
+                            Text(
+                              "Following",
+                              style: TextStyle(
+                                  fontSize: 17.sp, color: Colors.black54),
+                            ),
                           ],
                         ),
                       ),
                     ],
                   )
                 ],
-
               ),
             ),
             Container(
@@ -84,32 +128,42 @@ class _Profile_screenState extends State<Profile_screen> {
                   ListTile(
                     title: Text("Chats"),
                     subtitle: Text("Check your chat history"),
-                    leading: Icon(Icons.history_edu,color: Colors.black54,),
+                    leading: Icon(
+                      Icons.history_edu,
+                      color: Colors.black54,
+                    ),
                     trailing: Icon(Icons.keyboard_arrow_right),
                   ),
                   ListTile(
                     title: Text("Archived"),
                     subtitle: Text("Find your archived chats"),
-                    leading: Icon(Icons.favorite,color: Colors.black54,),
+                    leading: Icon(
+                      Icons.favorite,
+                      color: Colors.black54,
+                    ),
                     trailing: Icon(Icons.keyboard_arrow_right),
                   ),
                   ListTile(
                     title: Text("My Profile"),
                     subtitle: Text("Change your profile details"),
-                    leading: Icon(Icons.person,color: Colors.black54,),
+                    leading: Icon(
+                      Icons.person,
+                      color: Colors.black54,
+                    ),
                     trailing: Icon(Icons.keyboard_arrow_right),
                   ),
                   ListTile(
                     title: Text("Settings"),
                     subtitle: Text("Password and Security"),
-                    leading: Icon(Icons.settings,color: Colors.black54,),
+                    leading: Icon(
+                      Icons.settings,
+                      color: Colors.black54,
+                    ),
                     trailing: Icon(Icons.keyboard_arrow_right),
                   ),
-
                 ],
               ),
             )
-          
           ],
         ),
       ),
@@ -117,10 +171,15 @@ class _Profile_screenState extends State<Profile_screen> {
         padding: EdgeInsets.all(10.h),
         child: FloatingActionButton.extended(
             onPressed: () async {
-              
-                await Constant.firebaseAuth.signOut();
-                await GoogleSignIn().signOut();
-                Navigator.pop(context, MaterialPageRoute(builder: (_)=>LoginScreen()));
+              await Constant.firebaseAuth.signOut().then((value) async {
+                await GoogleSignIn().signOut().then((value) {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (_) => LoginScreen()));
+                });
+              });
             },
             label: Row(
               children: [

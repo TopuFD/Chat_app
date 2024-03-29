@@ -25,6 +25,7 @@ class _MyUserCardState extends State<MyUserCard> {
             child: CachedNetworkImage(
               height: 50.h,
               width: 50.w,
+              fit: BoxFit.fill,
               imageUrl: widget.myUser.image,
               placeholder: (context, url) => CircularProgressIndicator(),
               errorWidget: (context, url, error) => Icon(Icons.error),
