@@ -113,14 +113,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.blue,
                         ),
                       );
-
+        
                     case ConnectionState.active:
                     case ConnectionState.done:
                       final data = snapshot.data!.docs;
                       dataList = data
                           .map((e) => DataModel.fromJson(e.data()))
                           .toList();
-
+        
                       if (dataList.isNotEmpty) {
                         return ListView.builder(
                             itemCount: isSearching

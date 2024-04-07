@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:my_chat/model/data_model.dart';
 
 class Constant {
@@ -7,6 +10,9 @@ class Constant {
   static FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   //save data to database
   static FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+
+  // store image, vedio, any file
+  static FirebaseStorage firebaseStorage = FirebaseStorage.instance;
   static late DataModel me;
 
   //current user
@@ -63,5 +69,19 @@ class Constant {
         .collection("Users")
         .where("id", isNotEqualTo: curentUser.uid)
         .snapshots();
+  }
+
+  // Updating current user profil==================>
+  static Future<void> updatingUserProfile(File file) async {
+    final ext = file.path.split(".").last;
+    final ref =
+        firebaseStorage.ref().child("userProfile/${curentUser.uid}$ext");
+    await ref.putFile(file, SettableMetadata(contentType: "image/$ext"));
+
+    me.image = await ref.getDownloadURL();
+    await firebaseFirestore
+        .collection("Users")
+        .doc(curentUser.uid)
+        .update({"image": me.image});
   }
 }

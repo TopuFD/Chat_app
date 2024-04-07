@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_chat/model/data_model.dart';
+import 'package:my_chat/view/chat_screen.dart';
 
 // ignore: must_be_immutable
 class MyUserCard extends StatefulWidget {
@@ -15,19 +16,26 @@ class MyUserCard extends StatefulWidget {
 class _MyUserCardState extends State<MyUserCard> {
   @override
   Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context).size;
     return Card(
       elevation: 1.5,
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => ChatScreen(chatUser: widget.myUser)));
+        },
         child: ListTile(
           leading: ClipRRect(
-            borderRadius: BorderRadius.circular(50),
+            borderRadius: BorderRadius.circular(mq.height * .1),
             child: CachedNetworkImage(
-              height: 50.h,
-              width: 50.w,
+              height: mq.height * .06,
+              width: mq.height * .06,
               fit: BoxFit.fill,
               imageUrl: widget.myUser.image,
-              placeholder: (context, url) => CircularProgressIndicator(),
+              placeholder: (context, url) =>
+                  Center(child: CircularProgressIndicator()),
               errorWidget: (context, url, error) => Icon(Icons.error),
             ),
           ),
