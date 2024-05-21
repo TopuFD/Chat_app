@@ -108,19 +108,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
                     case ConnectionState.none:
-                      return Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.blue,
-                        ),
-                      );
-        
+                      return Container();
+
+                    // CircularProgressIndicator(
+                    //   color: Colors.blue,
+                    // );
+
                     case ConnectionState.active:
                     case ConnectionState.done:
                       final data = snapshot.data!.docs;
                       dataList = data
                           .map((e) => DataModel.fromJson(e.data()))
                           .toList();
-        
+
                       if (dataList.isNotEmpty) {
                         return ListView.builder(
                             itemCount: isSearching
@@ -151,3 +151,4 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+

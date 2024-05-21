@@ -22,3 +22,32 @@ class SignInGoogle {
     return await Constant.firebaseAuth.signInWithCredential(credential);
   }
 }
+// class SignInGoogle {
+//   Future<Object?> myGoogleService() async {
+//     try {
+//       // Trigger the authentication flow
+//       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+//       if (googleUser == null) {
+//         // The user canceled the sign-in
+//         return null;
+//       }
+
+//       // Obtain the auth details from the request
+//       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+//       // Create a new credential
+//       final credential = GoogleAuthProvider.credential(
+//         accessToken: googleAuth.accessToken,
+//         idToken: googleAuth.idToken,
+//       );
+
+//       // Once signed in, return the UserCredential
+//       return await Constant.firebaseAuth.signInWithCredential(credential);
+//     } catch (e) {
+//       // Handle error here
+//       print(e);
+//       return null;
+//     }
+//   }
+// }

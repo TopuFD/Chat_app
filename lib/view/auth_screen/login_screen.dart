@@ -114,12 +114,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: 15.h,
                         ),
                         InkWell(
-                          // onTap: () {
-                          //   Navigator.push(
-                          //       context,
-                          //       MaterialPageRoute(
-                          //           builder: (_) => HomeScreen()));
-                          // },
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => HomeScreen()));
+                          },
                           child: Container(
                             decoration: BoxDecoration(
                                 color: Colors.blue,

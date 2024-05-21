@@ -65,24 +65,24 @@ class _Profile_screenState extends State<Profile_screen> {
                               ),
                             ),
                       Positioned(
-                        bottom: 0.h,
-                        right: 0.w,
-                        child: MaterialButton(
-                          height: 50.h,
-                          minWidth: 50.w,
-                          color: Colors.blue,
-                          elevation: 2,
-                          shape: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(50),
-                              borderSide: BorderSide(
-                                  width: 3.0.w, color: Colors.white)),
-                          onPressed: () => _showModalSheet(),
-                          child: Icon(
-                            Icons.edit,
-                            color: Colors.white,
-                          ),
-                        ),
-                      )
+                          bottom: 0.h,
+                          right: 0.w,
+                          child: InkWell(
+                            onTap: () => _showModalSheet(),
+                            child: Container(
+                              padding: EdgeInsets.all(mq.width * .03),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.blue,
+                                border: Border.all(
+                                    color: Colors.white, width: mq.width * .01),
+                              ),
+                              child: Icon(
+                                Icons.edit,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ))
                     ],
                   ),
                   SizedBox(

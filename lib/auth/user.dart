@@ -1,9 +1,9 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:my_chat/model/data_model.dart';
+import 'package:my_chat/model/msg_model.dart';
 
 class Constant {
   // get authontication
@@ -84,4 +84,55 @@ class Constant {
         .doc(curentUser.uid)
         .update({"image": me.image});
   }
+  // chat screen related apis=================================
+
+  // getting conversation id
+
+  static String getConversationId(String id) =>
+      curentUser.uid.hashCode <= id.hashCode
+          ? "${curentUser.uid}_${id}"
+          : "${id}_${curentUser.uid}";
+  // getting all messages from database===================
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMsg(
+      DataModel chatUser) {
+    return firebaseFirestore
+        .collection("chat/${getConversationId(chatUser.id)}/Messages/")
+        .snapshots();
+  }
+
+  // message sending method ======================
+  static Future<void> sendMessage(DataModel chatuser, String msg) async {
+    // time date function====================>
+    final doctime = DateTime.now().millisecondsSinceEpoch.toString();
+    //message sending method=============>
+    final MsgModel message = MsgModel(
+        toId: curentUser.uid,
+        read: "",
+        message: msg,
+        type: Type.text,
+        send: doctime,
+        fromId: chatuser.id);
+    final ref = firebaseFirestore
+        .collection("chat/${getConversationId(chatuser.id)}/Messages/");
+    ref.doc(doctime).set(message.toJson());
+  }
+
+  // message read status checking method=================
+      // static Future<void> checkingReadStatus(MsgModel message) async {
+      //   firebaseFirestore
+      //       .collection("chat/${getConversationId(message.fromId)}/Messages/")
+      //       .doc(message.send)
+      //       .update({'read': DateTime.now().millisecondsSinceEpoch.toString()});
+      // }
+
+  
+  //getting last message of a spacic chat==============
+    static Stream<QuerySnapshot<Map<String, dynamic>>> getLastMsg(
+      DataModel chatUser) {
+    return firebaseFirestore
+        .collection("chat/${getConversationId(chatUser.id)}/Messages/")
+        .limit(1)
+        .snapshots();
+  }
+
 }
