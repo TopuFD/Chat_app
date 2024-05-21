@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -17,6 +18,8 @@ class Constant {
 
   //current user
   static final curentUser = firebaseAuth.currentUser!;
+
+  var docTime;
 
   //exists checker method
   Future<bool> existUser() async {
@@ -118,21 +121,45 @@ class Constant {
   }
 
   // message read status checking method=================
-      // static Future<void> checkingReadStatus(MsgModel message) async {
-      //   firebaseFirestore
-      //       .collection("chat/${getConversationId(message.fromId)}/Messages/")
-      //       .doc(message.send)
-      //       .update({'read': DateTime.now().millisecondsSinceEpoch.toString()});
-      // }
+  static Future<void> checkingReadStatus(MsgModel message) async {
+    try {
+      await firebaseFirestore
+          .collection("chat/${getConversationId(message.fromId)}/Messages/")
+          .doc(message.send)
+          .update({'read': DateTime.now().millisecondsSinceEpoch.toString()});
+    } catch (e) {
+      print("Error is ocurd");
+    }
+  }
 
-  
+  // static Future<void> checkingReadStatus(MsgModel message) async {
+  //   final docPath =
+  //       'chat/${getConversationId(message.fromId)}/Messages/${message.send}';
+  //   print('Checking document path: $docPath');
+
+  //   DocumentReference docRef = firebaseFirestore
+  //       .collection('chat/${getConversationId(message.fromId)}/Messages/')
+  //       .doc(message.read);
+
+  //   await docRef.get().then((doc) {
+  //     if (doc.exists) {
+  //       print('Document exists. Updating read status.');
+  //       docRef
+  //           .update({'read': "${message.send}"});
+  //     } else {
+  //       print('Document not found.');
+  //     }
+  //   }).catchError((error) {
+  //     print('Error fetching document: $error');
+  //   });
+  // }
+
   //getting last message of a spacic chat==============
-    static Stream<QuerySnapshot<Map<String, dynamic>>> getLastMsg(
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getLastMsg(
       DataModel chatUser) {
     return firebaseFirestore
         .collection("chat/${getConversationId(chatUser.id)}/Messages/")
         .limit(1)
         .snapshots();
   }
-
 }

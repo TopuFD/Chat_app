@@ -13,22 +13,23 @@ class AllMessage extends StatefulWidget {
 }
 
 class _AllMessageState extends State<AllMessage> {
-  bool isTimeShow = false;
   @override
   Widget build(BuildContext context) {
-    return Constant.curentUser.uid == widget.message.fromId
+    return Constant.curentUser.uid == widget.message.toId
         ? Padding(
             padding: EdgeInsets.only(bottom: 20.h),
-            child: blueMessage(),
+            child: greenMessage(),
           )
-        : greenMessage();
+        : blueMessage();
   }
 
   // another user message
   Widget blueMessage() {
-    // if (widget.message.read.isEmpty) {
-    //    Constant.checkingReadStatus(widget.message);
-    // }
+    
+    
+    if (widget.message.read.isEmpty) {
+      Constant.checkingReadStatus(widget.message);
+    }
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -55,27 +56,47 @@ class _AllMessageState extends State<AllMessage> {
             ),
           ),
         ),
-        isTimeShow?Text(
-          MyDateUtil.getFormatedTime(context: context, time: widget.message.send),
-          style: TextStyle(fontSize: 15.sp, color: Colors.grey),
-        ):Container(),
+        SizedBox(
+          child: Row(
+            children: [
+              Text(
+                MyDateUtil.getFormatedTime(
+                    context: context, time: widget.message.send),
+                style: TextStyle(fontSize: 15.sp, color: Colors.grey),
+              ),
+            ],
+          ),
+        )
       ],
     );
   }
 
   // current user message==========================
   Widget greenMessage() {
+    if (widget.message.read.isEmpty) {
+      Constant.checkingReadStatus(widget.message);
+    }
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // if(widget.message.read.isNotEmpty)
-        //   Icon(Icons.check,color: Colors.blue,),
-        isTimeShow
-            ? Text(
-                MyDateUtil.getFormatedTime(context: context, time: widget.message.send),
-                style: TextStyle(fontSize: 15.sp, color: Colors.grey),
-              )
-            : Container(),
+        Row(
+          children: [
+            widget.message.read.isNotEmpty
+                ? Icon(
+                    Icons.done_all_rounded,
+                    color: Colors.blue,
+                  )
+                : Container(),
+            SizedBox(
+              width: 3,
+            ),
+            Text(
+              MyDateUtil.getFormatedTime(
+                  context: context, time: widget.message.send),
+              style: TextStyle(fontSize: 15.sp, color: Colors.grey),
+            ),
+          ],
+        ),
         Flexible(
           child: Container(
             padding: EdgeInsets.symmetric(
