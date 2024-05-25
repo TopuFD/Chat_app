@@ -1,5 +1,5 @@
-import 'dart:io';
 
+import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/cupertino.dart';
@@ -19,109 +19,126 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends State<ChatScreen>{
   TextEditingController _controller = TextEditingController();
   static RxBool isText = false.obs;
   List<MsgModel> msgList = [];
   RxBool isShowEmoji = false.obs;
+  FocusNode _focusNode = FocusNode();
 
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        isShowEmoji.value = false;
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context).size;
     return Scaffold(
-        appBar: AppBar(
-          title: Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(mq.height * .1),
-                child: CachedNetworkImage(
-                  height: mq.height * .05,
-                  width: mq.height * .05,
-                  fit: BoxFit.fill,
-                  imageUrl: widget.chatUser.image,
-                  placeholder: (context, url) =>
-                      Center(child: CircularProgressIndicator()),
-                  errorWidget: (context, url, error) => Icon(Icons.error),
-                ),
+      appBar: AppBar(
+        title: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(mq.height * .1),
+              child: CachedNetworkImage(
+                height: mq.height * .05,
+                width: mq.height * .05,
+                fit: BoxFit.fill,
+                imageUrl: widget.chatUser.image,
+                placeholder: (context, url) =>
+                    Center(child: CircularProgressIndicator()),
+                errorWidget: (context, url, error) => Icon(Icons.error),
               ),
-              SizedBox(
-                width: 5.w,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.chatUser.name,
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    overflow: TextOverflow.ellipsis,
+            ),
+            SizedBox(
+              width: 5.w,
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.chatUser.name,
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
                   ),
-                  Text(
-                    "32m ago",
-                    style: TextStyle(
-                        fontSize: 12.sp,
-                        color: Colors.black54,
-                        fontWeight: FontWeight.normal),
-                  )
-                ],
-              )
-            ],
-          ),
-          actions: [
-            IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.call,
-                  color: Color.fromARGB(255, 0, 140, 255),
-                )),
-            IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  CupertinoIcons.videocam,
-                  color: Color.fromARGB(255, 0, 140, 255),
-                )),
-            IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.more_vert,
-                  color: Color.fromARGB(255, 0, 140, 255),
-                )),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  "32m ago",
+                  style: TextStyle(
+                      fontSize: 12.sp,
+                      color: Colors.black54,
+                      fontWeight: FontWeight.normal),
+                )
+              ],
+            )
           ],
         ),
-        body: Padding(
-          padding: const EdgeInsets.only(bottom: 5),
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 60),
-            child: Column(
-              children: [
-                Expanded(child: _chatBody()),
-                Column(
-                  children: [
-                    _chatInput(),
-                    if (isShowEmoji.value)
-                      EmojiPicker(
+        actions: [
+          IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.call,
+                color: Color.fromARGB(255, 0, 140, 255),
+              )),
+          IconButton(
+              onPressed: () {},
+              icon: Icon(
+                CupertinoIcons.videocam,
+                color: Color.fromARGB(255, 0, 140, 255),
+              )),
+          IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.more_vert,
+                color: Color.fromARGB(255, 0, 140, 255),
+              )),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.only(bottom: 5),
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: Column(
+            children: [
+              Expanded(child: _chatBody()),
+              Column(
+                children: [
+                  _chatInput(),
+                  Obx(() {
+                    if (isShowEmoji.value) {
+                      return EmojiPicker(
                         textEditingController: _controller,
+                        onEmojiSelected: (category, emoji) {
+                          _controller
+                            ..text += emoji.emoji
+                            ..selection = TextSelection.fromPosition(
+                                TextPosition(offset: _controller.text.length));
+                        },
                         config: Config(
                           emojiViewConfig: EmojiViewConfig(
                             emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
                           ),
-                          swapCategoryAndBottomBar: false,
-                          skinToneConfig: const SkinToneConfig(),
-                          categoryViewConfig: const CategoryViewConfig(),
-                          bottomActionBarConfig: const BottomActionBarConfig(),
-                          searchViewConfig: const SearchViewConfig(),
                         ),
-                      )
-                  ],
-                ),
-              ],
-            ),
+                      );
+                    } else {
+                      return Container();
+                    }
+                  }),
+                ],
+              ),
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   // here is chat input method==================>
@@ -162,16 +179,32 @@ class _ChatScreenState extends State<ChatScreen> {
                 padding: EdgeInsets.only(left: 5.w),
                 child: TextFormField(
                   controller: _controller,
+                  focusNode: _focusNode,
                   decoration: InputDecoration(
                       border: InputBorder.none,
-                      suffixIcon: IconButton(
-                          onPressed: () {
-                            Obx(()=>isShowEmoji.value =! isShowEmoji.value);
-                          },
-                          icon: Icon(
-                            Icons.tag_faces_rounded,
-                            color: Color(0xFFD400FF),
-                          )),
+                      suffixIcon: Obx(() {
+                        return Container(
+                          child: IconButton(
+                            onPressed: () {
+                              if (isShowEmoji.value) {
+                                // Hide emoji picker
+                                isShowEmoji.value = false;
+                                FocusScope.of(context).requestFocus(_focusNode);
+                              } else {
+                                // Show emoji picker and hide keyboard
+                                isShowEmoji.value = true;
+                                FocusScope.of(context).unfocus();
+                              }
+                            },
+                            icon: Icon(
+                              Icons.tag_faces_rounded,
+                              color: isShowEmoji.value
+                                  ? Color(0xFFD400FF)
+                                  : Colors.grey,
+                            ),
+                          ),
+                        );
+                      }),
                       hintText: "Write something"),
                   maxLines: null,
                   onChanged: (txt) {
@@ -184,7 +217,7 @@ class _ChatScreenState extends State<ChatScreen> {
           Obx(() => isText.value
               ? IconButton(
                   onPressed: () {
-                    if (_controller.text.isEmpty) {
+                    if (_controller.text.isNotEmpty) {
                       Constant.sendMessage(widget.chatUser, _controller.text);
                       _controller.clear();
                       isText.value = false;
