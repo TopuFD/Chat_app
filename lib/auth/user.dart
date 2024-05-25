@@ -89,7 +89,7 @@ class Constant {
   }
   // chat screen related apis=================================
 
-  // getting conversation id
+  // getting conversation id=============================
 
   static String getConversationId(String id) =>
       curentUser.uid.hashCode <= id.hashCode
@@ -104,15 +104,16 @@ class Constant {
   }
 
   // message sending method ======================
-  static Future<void> sendMessage(DataModel chatuser, String msg) async {
+  static Future<void> sendMessage(
+      DataModel chatuser, String msg, Type type) async {
     // time date function====================>
     final doctime = DateTime.now().millisecondsSinceEpoch.toString();
     //message sending method=============>
     final MsgModel message = MsgModel(
-        toId:  chatuser.id,
+        toId: chatuser.id,
         read: "",
         message: msg,
-        type: Type.text,
+        type: type,
         send: doctime,
         fromId: curentUser.uid);
     final ref = firebaseFirestore
@@ -137,10 +138,20 @@ class Constant {
       DataModel chatUser) {
     return firebaseFirestore
         .collection("chat/${getConversationId(chatUser.id)}/Messages/")
-        .orderBy("send",descending: true)
+        .orderBy("send", descending: true)
         .limit(1)
         .snapshots();
   }
 
+  // send chatting image =============================================
+  static Future<void> sendChatImage(DataModel chatUser, File file) async {
+    final ext = file.path.split(".").last;
+    final ref = firebaseStorage.ref().child(
+        "images/${getConversationId(chatUser.id)}${DateTime.now().millisecondsSinceEpoch}.$ext");
+    //upload image
+    await ref.putFile(file, SettableMetadata(contentType: "image/$ext"));
 
+    final imageUrl = await ref.getDownloadURL();
+    await sendMessage(chatUser, imageUrl, Type.image);
+  }
 }

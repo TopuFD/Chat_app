@@ -41,8 +41,14 @@ class _AllMessageState extends State<AllMessage> {
             ),
             margin: EdgeInsets.only(bottom: 10.h),
             decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 135, 179, 215),
-                border: Border.all(color: Colors.lightBlue, width: 2.w),
+                color: widget.message.type == Type.text
+                    ? Color(0xFF87B3D7)
+                    : Colors.transparent,
+                border: Border.all(
+                    color: widget.message.type == Type.text
+                        ? Colors.lightBlue
+                        : Colors.transparent,
+                    width: 2.w),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(30.r),
                   topRight: Radius.circular(30.r),
@@ -50,10 +56,21 @@ class _AllMessageState extends State<AllMessage> {
                 )),
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 4.h),
-              child: Text(
-                widget.message.message,
-                style: TextStyle(fontSize: 17.sp, color: Colors.black),
-              ),
+              child: widget.message.type == Type.text
+                  ? Text(
+                      widget.message.message,
+                      style: TextStyle(fontSize: 17.sp, color: Colors.black),
+                    )
+                  : ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: CachedNetworkImage(
+                        fit: BoxFit.fill,
+                        imageUrl: widget.message.message, height: 100,width: 100,
+                        placeholder: (context, url) =>
+                            Center(child: CircularProgressIndicator(color: Colors.blue,)),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                      ),
+                    ),
             ),
           ),
         ),
@@ -99,8 +116,14 @@ class _AllMessageState extends State<AllMessage> {
                 ),
                 margin: EdgeInsets.only(bottom: 10.h),
                 decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 160, 234, 163),
-                    border: Border.all(color: Colors.lightGreen, width: 2.w),
+                    color: widget.message.type == Type.text
+                        ? Color(0xFFA0EAA3)
+                        : Colors.transparent,
+                    border: Border.all(
+                        color: widget.message.type == Type.text
+                            ? Colors.lightGreen
+                            : Colors.transparent,
+                        width: 2.w),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(30.r),
                       topRight: Radius.circular(30.r),
@@ -108,26 +131,39 @@ class _AllMessageState extends State<AllMessage> {
                     )),
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 4.h),
-                  child: Text(
-                    widget.message.message,
-                    style: TextStyle(fontSize: 17.sp, color: Colors.black),
-                  ),
+                  child: widget.message.type == Type.text
+                      ? Text(
+                          widget.message.message,
+                          style:
+                              TextStyle(fontSize: 17.sp, color: Colors.black),
+                        )
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: CachedNetworkImage(
+                            fit: BoxFit.fill,
+                            imageUrl: widget.message.message, height: 200,
+                            placeholder: (context, url) =>
+                                Center(child: CircularProgressIndicator(color: Colors.blue,)),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
+                          ),
+                        ),
                 ),
               ),
               // show the toId image if The text is read
               widget.message.read.isNotEmpty
                   ? ClipRRect(
-                    borderRadius: BorderRadius.circular(100),
-                    child: CachedNetworkImage(
-                    height: 20,
-                    width: 20,
-                    fit: BoxFit.fill,
-                    imageUrl: widget.chatUser.image,
-                    placeholder: (context, url) =>
-                        Center(child: CircularProgressIndicator()),
-                    errorWidget: (context, url, error) => Icon(Icons.error),
-                                    ),
-                  )
+                      borderRadius: BorderRadius.circular(100),
+                      child: CachedNetworkImage(
+                        height: 20,
+                        width: 20,
+                        fit: BoxFit.fill,
+                        imageUrl: widget.chatUser.image,
+                        placeholder: (context, url) =>
+                            Center(child: CircularProgressIndicator()),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                      ),
+                    )
                   : Container(),
               SizedBox(
                 width: 3,

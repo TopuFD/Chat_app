@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
@@ -6,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:my_chat/auth/user.dart';
 import 'package:my_chat/model/data_model.dart';
 import 'package:my_chat/model/msg_model.dart';
@@ -19,7 +19,7 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen>{
+class _ChatScreenState extends State<ChatScreen> {
   TextEditingController _controller = TextEditingController();
   static RxBool isText = false.obs;
   List<MsgModel> msgList = [];
@@ -35,6 +35,7 @@ class _ChatScreenState extends State<ChatScreen>{
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context).size;
@@ -153,13 +154,29 @@ class _ChatScreenState extends State<ChatScreen>{
                 : Row(
                     children: [
                       IconButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            final ImagePicker _picker = ImagePicker();
+                            final XFile? image = await _picker.pickImage(
+                                source: ImageSource.gallery, imageQuality: 100);
+                            if (image != null) {
+                              Constant.sendChatImage(
+                                  widget.chatUser, File(image.path));
+                            }
+                          },
                           icon: Icon(
                             Icons.image,
                             color: Colors.blue,
                           )),
                       IconButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            final ImagePicker _picker = ImagePicker();
+                            final XFile? image = await _picker.pickImage(
+                                source: ImageSource.camera, imageQuality: 100);
+                            if (image != null) {
+                              Constant.sendChatImage(
+                                  widget.chatUser, File(image.path));
+                            }
+                          },
                           icon: Icon(
                             CupertinoIcons.photo_camera_solid,
                             color: Colors.blue,
@@ -218,7 +235,8 @@ class _ChatScreenState extends State<ChatScreen>{
               ? IconButton(
                   onPressed: () {
                     if (_controller.text.isNotEmpty) {
-                      Constant.sendMessage(widget.chatUser, _controller.text);
+                      Constant.sendMessage(
+                          widget.chatUser, _controller.text, Type.text);
                       _controller.clear();
                       isText.value = false;
                     }
