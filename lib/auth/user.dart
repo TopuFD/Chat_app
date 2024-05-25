@@ -109,12 +109,12 @@ class Constant {
     final doctime = DateTime.now().millisecondsSinceEpoch.toString();
     //message sending method=============>
     final MsgModel message = MsgModel(
-        toId: curentUser.uid,
+        toId:  chatuser.id,
         read: "",
         message: msg,
         type: Type.text,
         send: doctime,
-        fromId: chatuser.id);
+        fromId: curentUser.uid);
     final ref = firebaseFirestore
         .collection("chat/${getConversationId(chatuser.id)}/Messages/");
     ref.doc(doctime).set(message.toJson());
@@ -132,34 +132,15 @@ class Constant {
     }
   }
 
-  // static Future<void> checkingReadStatus(MsgModel message) async {
-  //   final docPath =
-  //       'chat/${getConversationId(message.fromId)}/Messages/${message.send}';
-  //   print('Checking document path: $docPath');
-
-  //   DocumentReference docRef = firebaseFirestore
-  //       .collection('chat/${getConversationId(message.fromId)}/Messages/')
-  //       .doc(message.read);
-
-  //   await docRef.get().then((doc) {
-  //     if (doc.exists) {
-  //       print('Document exists. Updating read status.');
-  //       docRef
-  //           .update({'read': "${message.send}"});
-  //     } else {
-  //       print('Document not found.');
-  //     }
-  //   }).catchError((error) {
-  //     print('Error fetching document: $error');
-  //   });
-  // }
-
   //getting last message of a spacic chat==============
   static Stream<QuerySnapshot<Map<String, dynamic>>> getLastMsg(
       DataModel chatUser) {
     return firebaseFirestore
         .collection("chat/${getConversationId(chatUser.id)}/Messages/")
+        .orderBy("send",descending: true)
         .limit(1)
         .snapshots();
   }
+
+
 }

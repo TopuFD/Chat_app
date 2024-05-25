@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -20,6 +23,7 @@ class _ChatScreenState extends State<ChatScreen> {
   TextEditingController _controller = TextEditingController();
   static RxBool isText = false.obs;
   List<MsgModel> msgList = [];
+  RxBool isShowEmoji = false.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -90,11 +94,32 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         body: Padding(
           padding: const EdgeInsets.only(bottom: 5),
-          child: Column(
-            children: [
-              Expanded(flex: 4, child: _chatBody()),
-              Expanded(flex: 1, child: _chatInput()),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 60),
+            child: Column(
+              children: [
+                Expanded(child: _chatBody()),
+                Column(
+                  children: [
+                    _chatInput(),
+                    if (isShowEmoji.value)
+                      EmojiPicker(
+                        textEditingController: _controller,
+                        config: Config(
+                          emojiViewConfig: EmojiViewConfig(
+                            emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
+                          ),
+                          swapCategoryAndBottomBar: false,
+                          skinToneConfig: const SkinToneConfig(),
+                          categoryViewConfig: const CategoryViewConfig(),
+                          bottomActionBarConfig: const BottomActionBarConfig(),
+                          searchViewConfig: const SearchViewConfig(),
+                        ),
+                      )
+                  ],
+                ),
+              ],
+            ),
           ),
         ));
   }
@@ -139,7 +164,14 @@ class _ChatScreenState extends State<ChatScreen> {
                   controller: _controller,
                   decoration: InputDecoration(
                       border: InputBorder.none,
-                      suffixIcon: Icon(Icons.search),
+                      suffixIcon: IconButton(
+                          onPressed: () {
+                            Obx(()=>isShowEmoji.value =! isShowEmoji.value);
+                          },
+                          icon: Icon(
+                            Icons.tag_faces_rounded,
+                            color: Color(0xFFD400FF),
+                          )),
                       hintText: "Write something"),
                   maxLines: null,
                   onChanged: (txt) {
@@ -152,10 +184,10 @@ class _ChatScreenState extends State<ChatScreen> {
           Obx(() => isText.value
               ? IconButton(
                   onPressed: () {
-                    if (_controller.text.isNotEmpty) {
+                    if (_controller.text.isEmpty) {
                       Constant.sendMessage(widget.chatUser, _controller.text);
-                        _controller.clear();
-                        isText.value = false;
+                      _controller.clear();
+                      isText.value = false;
                     }
                   },
                   icon: Icon(
@@ -195,7 +227,10 @@ class _ChatScreenState extends State<ChatScreen> {
                     itemCount: msgList.length,
                     physics: BouncingScrollPhysics(),
                     itemBuilder: (context, index) {
-                      return AllMessage(message: msgList[index]);
+                      return AllMessage(
+                        message: msgList[index],
+                        chatUser: widget.chatUser,
+                      );
                     });
               } else {
                 return Center(
