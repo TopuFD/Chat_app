@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -21,7 +20,7 @@ class Constant {
 
   var docTime;
 
-  //exists checker method
+  //exists checker method======================
   Future<bool> existUser() async {
     return (await firebaseFirestore
             .collection("Users")
@@ -30,7 +29,7 @@ class Constant {
         .exists;
   }
 
-  //getting currentUser info
+  //getting currentUser info==================================
   static Future<void> selfInfo() async {
     await firebaseFirestore
         .collection("Users")
@@ -47,7 +46,24 @@ class Constant {
     });
   }
 
-  //new user creater method
+  // other users info===============================>
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getUserInfo(
+      DataModel chatUser) {
+    return firebaseFirestore
+        .collection("Users")
+        .where("id", isEqualTo: chatUser.id)
+        .snapshots();
+  }
+
+  // checking user active status==========================>
+  static Future<void> userActiveStatus(bool isOnline) async {
+    await firebaseFirestore.collection("Users").doc(curentUser.uid).update({
+      "is_online": isOnline,
+      "last_active": DateTime.now().millisecondsSinceEpoch.toString()
+    });
+  }
+
+  //new user creater method=============================
   static Future<void> createUser() async {
     final time = DateTime.now().millisecondsSinceEpoch.toString();
     final myUser = DataModel(
@@ -66,7 +82,7 @@ class Constant {
         .set(myUser.toJson());
   }
 
-  // getting all users from database
+  // getting all users from database=========================
   static Stream<QuerySnapshot<Map<String, dynamic>>> getAllUser() {
     return firebaseFirestore
         .collection("Users")
@@ -95,11 +111,12 @@ class Constant {
       curentUser.uid.hashCode <= id.hashCode
           ? "${curentUser.uid}_${id}"
           : "${id}_${curentUser.uid}";
-  // getting all messages from database===================
+  // getting all messages from database==============================
   static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMsg(
       DataModel chatUser) {
     return firebaseFirestore
         .collection("chat/${getConversationId(chatUser.id)}/Messages/")
+        .orderBy("send", descending: true)
         .snapshots();
   }
 

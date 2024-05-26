@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:my_chat/auth/user.dart';
+import 'package:my_chat/helper/my_date_util.dart';
 import 'package:my_chat/model/data_model.dart';
 import 'package:my_chat/model/msg_model.dart';
 import 'package:my_chat/widgets/message_card.dart';
@@ -38,73 +38,13 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final mq = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(mq.height * .1),
-              child: CachedNetworkImage(
-                height: mq.height * .05,
-                width: mq.height * .05,
-                fit: BoxFit.fill,
-                imageUrl: widget.chatUser.image,
-                placeholder: (context, url) =>
-                    Center(child: CircularProgressIndicator()),
-                errorWidget: (context, url, error) => Icon(Icons.error),
-              ),
-            ),
-            SizedBox(
-              width: 5.w,
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.chatUser.name,
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  "32m ago",
-                  style: TextStyle(
-                      fontSize: 12.sp,
-                      color: Colors.black54,
-                      fontWeight: FontWeight.normal),
-                )
-              ],
-            )
-          ],
-        ),
-        actions: [
-          IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.call,
-                color: Color.fromARGB(255, 0, 140, 255),
-              )),
-          IconButton(
-              onPressed: () {},
-              icon: Icon(
-                CupertinoIcons.videocam,
-                color: Color.fromARGB(255, 0, 140, 255),
-              )),
-          IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.more_vert,
-                color: Color.fromARGB(255, 0, 140, 255),
-              )),
-        ],
+        automaticallyImplyLeading: false,
+        flexibleSpace: _appBar(),
       ),
       body: Padding(
-        padding: const EdgeInsets.only(bottom: 5),
+        padding: const EdgeInsets.only(bottom: 30),
         child: Padding(
           padding: const EdgeInsets.only(bottom: 20),
           child: Column(
@@ -119,9 +59,9 @@ class _ChatScreenState extends State<ChatScreen> {
                         textEditingController: _controller,
                         onEmojiSelected: (category, emoji) {
                           _controller
-                            ..text += emoji.emoji
                             ..selection = TextSelection.fromPosition(
                                 TextPosition(offset: _controller.text.length));
+                          isText.value = _controller.text.isNotEmpty;
                         },
                         config: Config(
                           emojiViewConfig: EmojiViewConfig(
@@ -142,6 +82,138 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  // appbar widget=================
+  Widget _appBar() {
+    return Padding(
+        padding: const EdgeInsets.only(top: 35),
+        child: StreamBuilder(
+            stream: Constant.getUserInfo(widget.chatUser),
+            builder: (context, snapshot) {
+              final data = snapshot.data?.docs;
+              final list =
+                  data?.map((e) => DataModel.fromJson(e.data())).toList() ?? [];
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(
+                        Icons.arrow_back,
+                        color: Colors.black,
+                      )),
+                  Container(
+                    child: Row(
+                      children: [
+                        ClipRRect(
+                            borderRadius: BorderRadius.circular(100),
+                            child: Stack(
+                              children: [
+                                Image.network(
+                                  height: 35,
+                                  width: 35,
+                                  list.isNotEmpty
+                                      ? list[0].image
+                                      : widget.chatUser.image,
+                                  fit: BoxFit.fill,
+                                  filterQuality: FilterQuality.high,
+                                ),
+                                Positioned(
+                                    bottom: 1.h,
+                                    right: 2.w,
+                                    child: list.isNotEmpty
+                                        ? list[0].isOnline
+                                                ? Container(
+                                                    padding: EdgeInsets.all(5),
+                                                    decoration: BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      color: Colors.green,
+                                                      border: Border.all(
+                                                          color: Colors.white,
+                                                          width: 2),
+                                                    ),
+                                                  )
+                                                : SizedBox()
+                                        : SizedBox())
+                              ],
+                            )),
+                        SizedBox(
+                          width: 10.w,
+                        ),
+                        SizedBox(
+                          width: 100,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                list.isNotEmpty
+                                    ? list[0].name
+                                    : widget.chatUser.name,
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                overflow: TextOverflow.clip,
+                                maxLines: 1,
+                              ),
+                              Text(
+                                list.isNotEmpty
+                                    ? list[0].isOnline
+                                        ? "Active now"
+                                        : MyDateUtil.getLastActiveTime(
+                                            context: context,
+                                            lastActive: list[0].lastActive)
+                                    : MyDateUtil.getLastActiveTime(
+                                        context: context,
+                                        lastActive: widget.chatUser.lastActive),
+                                style: TextStyle(
+                                    fontSize: 10.sp,
+                                    color: Colors.black54,
+                                    fontWeight: FontWeight.normal),
+                                overflow: TextOverflow.clip,
+                                maxLines: 1,
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    width: 20.w,
+                  ),
+                  Container(
+                    child: Row(
+                      children: [
+                        IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.call,
+                              color: Color.fromARGB(255, 0, 140, 255),
+                            )),
+                        IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              CupertinoIcons.videocam,
+                              color: Color.fromARGB(255, 0, 140, 255),
+                            )),
+                        IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.more_vert,
+                              color: Color.fromARGB(255, 0, 140, 255),
+                            )),
+                      ],
+                    ),
+                  )
+                ],
+              );
+            }));
+  }
+
   // here is chat input method==================>
   Widget _chatInput() {
     return Container(
@@ -156,11 +228,11 @@ class _ChatScreenState extends State<ChatScreen> {
                       IconButton(
                           onPressed: () async {
                             final ImagePicker _picker = ImagePicker();
-                            final XFile? image = await _picker.pickImage(
-                                source: ImageSource.gallery, imageQuality: 100);
-                            if (image != null) {
+                            final List<XFile> images =
+                                await _picker.pickMultiImage(imageQuality: 100);
+                            for (var i in images) {
                               Constant.sendChatImage(
-                                  widget.chatUser, File(image.path));
+                                  widget.chatUser, File(i.path));
                             }
                           },
                           icon: Icon(
@@ -276,6 +348,7 @@ class _ChatScreenState extends State<ChatScreen> {
               if (msgList.isNotEmpty) {
                 return ListView.builder(
                     itemCount: msgList.length,
+                    reverse: true,
                     physics: BouncingScrollPhysics(),
                     itemBuilder: (context, index) {
                       return AllMessage(
@@ -298,3 +371,68 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 }
+
+
+// AppBar(
+//         title: Row(
+//           children: [
+//             ClipRRect(
+//               borderRadius: BorderRadius.circular(mq.height * .1),
+//               child: CachedNetworkImage(
+//                 height: mq.height * .05,
+//                 width: mq.height * .05,
+//                 fit: BoxFit.fill,
+//                 imageUrl: widget.chatUser.image,
+//                 placeholder: (context, url) =>
+//                     Center(child: CircularProgressIndicator()),
+//                 errorWidget: (context, url, error) => Icon(Icons.error),
+//               ),
+//             ),
+//             SizedBox(
+//               width: 5.w,
+//             ),
+//             Column(
+//               mainAxisAlignment: MainAxisAlignment.start,
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 Text(
+//                   widget.chatUser.name,
+//                   style: TextStyle(
+//                     fontSize: 18.sp,
+//                     color: Colors.black,
+//                     fontWeight: FontWeight.bold,
+//                   ),
+//                   overflow: TextOverflow.ellipsis,
+//                 ),
+//                 Text(
+//                   "32m ago",
+//                   style: TextStyle(
+//                       fontSize: 12.sp,
+//                       color: Colors.black54,
+//                       fontWeight: FontWeight.normal),
+//                 )
+//               ],
+//             )
+//           ],
+//         ),
+//         actions: [
+//           IconButton(
+//               onPressed: () {},
+//               icon: Icon(
+//                 Icons.call,
+//                 color: Color.fromARGB(255, 0, 140, 255),
+//               )),
+//           IconButton(
+//               onPressed: () {},
+//               icon: Icon(
+//                 CupertinoIcons.videocam,
+//                 color: Color.fromARGB(255, 0, 140, 255),
+//               )),
+//           IconButton(
+//               onPressed: () {},
+//               icon: Icon(
+//                 Icons.more_vert,
+//                 color: Color.fromARGB(255, 0, 140, 255),
+//               )),
+//         ],
+//       ),

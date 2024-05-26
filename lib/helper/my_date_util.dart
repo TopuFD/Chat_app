@@ -22,6 +22,28 @@ class MyDateUtil {
     return "${sendTime.day} ${getMonth(sendTime)}";
   }
 
+  //get user last active time=======================>
+  static String getLastActiveTime(
+      {required BuildContext context, required String lastActive}) {
+    final int i = int.tryParse(lastActive) ?? -1;
+    if (i == -1) return "last seen Time not available";
+    DateTime time = DateTime.fromMillisecondsSinceEpoch(i);
+    DateTime now = DateTime.now();
+
+    String formatedTime = TimeOfDay.fromDateTime(time).format(context);
+    if (time.day == now.day &&
+        time.month == now.month &&
+        time.year == time.year) {
+      return "Last seen today at $formatedTime";
+    }
+    if (now.difference(time).inHours / 24.round() == 1) {
+      return "Last seen yesterday at $formatedTime";
+      
+    }
+    String munth = getMonth(time);
+    return "Last seen on ${time.day} $munth on $formatedTime";
+    }
+
   static String getMonth(DateTime date) {
     switch (date.month) {
       case 1:

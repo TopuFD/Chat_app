@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_chat/auth/user.dart';
 import 'package:my_chat/model/data_model.dart';
@@ -31,6 +32,12 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     Constant.selfInfo();
+    Constant.userActiveStatus(true);
+    SystemChannels.lifecycle.setMessageHandler((message) {
+      if(message.toString().contains("resume"))Constant.userActiveStatus(true);
+      if(message.toString().contains("pause"))Constant.userActiveStatus(false);
+      return Future.value(message);
+    });
   }
 
   @override
@@ -129,8 +136,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             physics: BouncingScrollPhysics(),
                             itemBuilder: (context, index) {
                               return isSearching
-                                  ? MyUserCard(myUser: _searchingList[index])
-                                  : MyUserCard(myUser: dataList[index]);
+                                  ? MyUserCard(
+                                      myUser: _searchingList[index],
+                                    )
+                                  : MyUserCard(
+                                      myUser: dataList[index],
+                                    );
                             });
                       } else {
                         return Center(
@@ -151,4 +162,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-

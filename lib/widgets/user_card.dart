@@ -1,6 +1,5 @@
-import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_chat/auth/user.dart';
 import 'package:my_chat/helper/my_date_util.dart';
@@ -35,48 +34,91 @@ class _MyUserCardState extends State<MyUserCard> {
               stream: Constant.getLastMsg(widget.myUser),
               builder: (context, snapshot) {
                 final data = snapshot.data?.docs;
-                final list = data?.map((e) => MsgModel.fromJson(e.data())).toList()??[];
+                final list =
+                    data?.map((e) => MsgModel.fromJson(e.data())).toList() ??
+                        [];
                 if (list.isNotEmpty) {
                   message = list[0];
                 }
 
                 return ListTile(
-                  leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(mq.height * .1),
-                    child: CachedNetworkImage(
-                      height: mq.height * .06,
-                      width: mq.height * .06,
-                      fit: BoxFit.fill,
-                      imageUrl: widget.myUser.image,
-                      placeholder: (context, url) =>
-                          Center(child: CircularProgressIndicator()),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(100),
+                            child: Stack(
+                              children: [
+                                Image.network(
+                                  height: mq.height * .06,
+                        width: mq.height * .06,
+                                  widget.myUser.image,
+                                  fit: BoxFit.fill,
+                                  filterQuality: FilterQuality.high,
+                                ),
+                                Positioned(
+                                    bottom: 3.h,
+                                    right: 5.w,
+                                    child:  widget.myUser.isOnline?Container(
+                                      padding: EdgeInsets.all(5),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.green,
+                                        border: Border.all(
+                                            color: Colors.white,
+                                            width: 2),
+                                      ),
+                                    ):SizedBox())
+                              ],
+                            )),
+                    title: Text(
+                      widget.myUser.name,
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold),
                     ),
-                  ),
-
-                  title: Text(widget.myUser.name,style: TextStyle(fontSize: 20,color: Colors.black,fontWeight: FontWeight.bold),),
-                  subtitle: SizedBox(
-                    child: Text(
-                      message != null? message!.message :
-                      widget.myUser.about,
-                      maxLines: 1,
-                      style: TextStyle(fontSize: 15,color: Colors.black54,fontWeight: FontWeight.bold),
+                    subtitle: SizedBox(
+                      child: message == null
+                          ? Text("")
+                          : message?.type == Type.image
+                              ? Text("Image")
+                              : Text(
+                                  message!.message,
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black54,
+                                      fontWeight: FontWeight.bold),
+                                ),
                     ),
-                  ),
-                  trailing: message == null
-                      ? null
-                      :message!.read.isEmpty && message!.fromId != Constant.curentUser.uid?
-                      Container(
-                          height: 15.h,
-                          width: 15.h,
-                          decoration: BoxDecoration(
-                              color: Colors.greenAccent,
-                              borderRadius: BorderRadius.circular(50)),
-                        ): Text(
-                          MyDateUtil.getlastChatTime(context: context, time: message!.send)
-                        )
-                     
-                );
+                    trailing: message == null
+                        ? null
+                        : message!.read.isEmpty &&
+                                message!.fromId != Constant.curentUser.uid
+                            ? Container(
+                                height: 15.h,
+                                width: 15.h,
+                                decoration: BoxDecoration(
+                                    color: Colors.greenAccent,
+                                    borderRadius: BorderRadius.circular(50)),
+                              )
+                            : Text(
+                                    list.isNotEmpty
+                                        ? widget.myUser.isOnline
+                                            ? "Active now"
+                                            : MyDateUtil.getLastActiveTime(
+                                                context: context,
+                                                lastActive:
+                                                    widget.myUser.lastActive)
+                                        : MyDateUtil.getLastActiveTime(
+                                            context: context,
+                                            lastActive:
+                                                widget.myUser.lastActive),
+                                    style: TextStyle(
+                                        fontSize: 10.sp,
+                                        color: Colors.black54,
+                                        fontWeight: FontWeight.normal),
+                                    overflow: TextOverflow.clip,
+                                    maxLines: 1,
+                                  ));
               })),
     );
   }
