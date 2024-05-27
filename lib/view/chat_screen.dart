@@ -9,6 +9,7 @@ import 'package:my_chat/auth/user.dart';
 import 'package:my_chat/helper/my_date_util.dart';
 import 'package:my_chat/model/data_model.dart';
 import 'package:my_chat/model/msg_model.dart';
+import 'package:my_chat/view/user_profile.dart';
 import 'package:my_chat/widgets/message_card.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -85,7 +86,7 @@ class _ChatScreenState extends State<ChatScreen> {
   // appbar widget=================
   Widget _appBar() {
     return Padding(
-        padding: const EdgeInsets.only(top: 35),
+        padding: const EdgeInsets.only(top: 30, bottom: 5),
         child: StreamBuilder(
             stream: Constant.getUserInfo(widget.chatUser),
             builder: (context, snapshot) {
@@ -93,6 +94,7 @@ class _ChatScreenState extends State<ChatScreen> {
               final list =
                   data?.map((e) => DataModel.fromJson(e.data())).toList() ?? [];
               return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   IconButton(
@@ -103,83 +105,93 @@ class _ChatScreenState extends State<ChatScreen> {
                         Icons.arrow_back,
                         color: Colors.black,
                       )),
-                  Container(
-                    child: Row(
-                      children: [
-                        ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            child: Stack(
-                              children: [
-                                Image.network(
-                                  height: 35,
-                                  width: 35,
-                                  list.isNotEmpty
-                                      ? list[0].image
-                                      : widget.chatUser.image,
-                                  fit: BoxFit.fill,
-                                  filterQuality: FilterQuality.high,
-                                ),
-                                Positioned(
-                                    bottom: 1.h,
-                                    right: 2.w,
-                                    child: list.isNotEmpty
-                                        ? list[0].isOnline
-                                                ? Container(
-                                                    padding: EdgeInsets.all(5),
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      color: Colors.green,
-                                                      border: Border.all(
-                                                          color: Colors.white,
-                                                          width: 2),
-                                                    ),
-                                                  )
-                                                : SizedBox()
-                                        : SizedBox())
-                              ],
-                            )),
-                        SizedBox(
-                          width: 10.w,
-                        ),
-                        SizedBox(
-                          width: 100,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                list.isNotEmpty
-                                    ? list[0].name
-                                    : widget.chatUser.name,
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                overflow: TextOverflow.clip,
-                                maxLines: 1,
-                              ),
-                              Text(
-                                list.isNotEmpty
-                                    ? list[0].isOnline
-                                        ? "Active now"
-                                        : MyDateUtil.getLastActiveTime(
-                                            context: context,
-                                            lastActive: list[0].lastActive)
-                                    : MyDateUtil.getLastActiveTime(
-                                        context: context,
-                                        lastActive: widget.chatUser.lastActive),
-                                style: TextStyle(
-                                    fontSize: 10.sp,
-                                    color: Colors.black54,
-                                    fontWeight: FontWeight.normal),
-                                overflow: TextOverflow.clip,
-                                maxLines: 1,
-                              )
-                            ],
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => UserProfileScreen(
+                                  otherUser: widget.chatUser)));
+                    },
+                    child: Container(
+                      child: Row(
+                        children: [
+                          ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: Stack(
+                                children: [
+                                  Image.network(
+                                    height: 35,
+                                    width: 35,
+                                    list.isNotEmpty
+                                        ? list[0].image
+                                        : widget.chatUser.image,
+                                    fit: BoxFit.fill,
+                                    filterQuality: FilterQuality.high,
+                                  ),
+                                  Positioned(
+                                      bottom: 1.h,
+                                      right: 2.w,
+                                      child: list.isNotEmpty
+                                          ? list[0].isOnline
+                                              ? Container(
+                                                  padding: EdgeInsets.all(5),
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: Colors.green,
+                                                    border: Border.all(
+                                                        color: Colors.white,
+                                                        width: 2),
+                                                  ),
+                                                )
+                                              : SizedBox()
+                                          : SizedBox())
+                                ],
+                              )),
+                          SizedBox(
+                            width: 10.w,
                           ),
-                        ),
-                      ],
+                          SizedBox(
+                            width: 100,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  list.isNotEmpty
+                                      ? list[0].name
+                                      : widget.chatUser.name,
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  overflow: TextOverflow.clip,
+                                  maxLines: 1,
+                                ),
+                                Text(
+                                  list.isNotEmpty
+                                      ? list[0].isOnline
+                                          ? "Active now"
+                                          : MyDateUtil.getLastActiveTime(
+                                              context: context,
+                                              lastActive: list[0].lastActive)
+                                      : MyDateUtil.getLastActiveTime(
+                                          context: context,
+                                          lastActive:
+                                              widget.chatUser.lastActive),
+                                  style: TextStyle(
+                                      fontSize: 10.sp,
+                                      color: Colors.black54,
+                                      fontWeight: FontWeight.normal),
+                                  overflow: TextOverflow.clip,
+                                  maxLines: 1,
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   SizedBox(
@@ -197,13 +209,19 @@ class _ChatScreenState extends State<ChatScreen> {
                         IconButton(
                             onPressed: () {},
                             icon: Icon(
-                              CupertinoIcons.videocam,
+                              CupertinoIcons.video_camera,
                               color: Color.fromARGB(255, 0, 140, 255),
                             )),
                         IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => UserProfileScreen(
+                                          otherUser: widget.chatUser)));
+                            },
                             icon: Icon(
-                              Icons.more_vert,
+                              Icons.info,
                               color: Color.fromARGB(255, 0, 140, 255),
                             )),
                       ],

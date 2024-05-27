@@ -68,7 +68,7 @@ class Constant {
     final time = DateTime.now().millisecondsSinceEpoch.toString();
     final myUser = DataModel(
         image: curentUser.photoURL.toString(),
-        about: "Bangladesh",
+        about: "End-to-end encrypted",
         name: curentUser.displayName.toString(),
         createdAt: time,
         lastActive: time,

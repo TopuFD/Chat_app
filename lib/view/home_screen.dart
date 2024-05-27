@@ -20,10 +20,8 @@ class _HomeScreenState extends State<HomeScreen> {
   List<String> items = List.generate(20, (index) => "Item $index");
 
   Future<void> _refresh() async {
-    // Simulate a delay for demonstration purposes
     await Future.delayed(Duration(seconds: 2));
     setState(() {
-      // Generate new list of items
       items = List.generate(20, (index) => "Refreshed Item $index");
     });
   }
@@ -34,8 +32,12 @@ class _HomeScreenState extends State<HomeScreen> {
     Constant.selfInfo();
     Constant.userActiveStatus(true);
     SystemChannels.lifecycle.setMessageHandler((message) {
-      if(message.toString().contains("resume"))Constant.userActiveStatus(true);
-      if(message.toString().contains("pause"))Constant.userActiveStatus(false);
+      if (Constant.firebaseAuth.currentUser != null) {
+        if (message.toString().contains("resume"))
+          Constant.userActiveStatus(true);
+        if (message.toString().contains("pause"))
+          Constant.userActiveStatus(false);
+      }
       return Future.value(message);
     });
   }

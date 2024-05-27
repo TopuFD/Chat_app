@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -191,10 +193,12 @@ class _Profile_screenState extends State<Profile_screen> {
         padding: EdgeInsets.all(10.h),
         child: FloatingActionButton.extended(
             onPressed: () async {
+              await Constant.userActiveStatus(false);
               await Constant.firebaseAuth.signOut().then((value) async {
                 await GoogleSignIn().signOut().then((value) {
                   Navigator.pop(context);
-                  Navigator.pop(context);
+
+                  Constant.firebaseAuth = FirebaseAuth.instance;
 
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (_) => LoginScreen()));
