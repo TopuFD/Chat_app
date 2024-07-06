@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:my_chat/model/data_model.dart';
 import 'package:my_chat/model/msg_model.dart';
@@ -18,7 +19,20 @@ class Constant {
   //current user
   static final curentUser = firebaseAuth.currentUser!;
 
+  // for push notification instace
+  static FirebaseMessaging messaging = FirebaseMessaging.instance;
+
   var docTime;
+
+  static Future<void> getNotificationToken() async {
+    await messaging.requestPermission();
+    await messaging.getToken().then((token) {
+      if (token != null) {
+        me.pushToken = token;
+        print("push token : $token");
+      }
+    });
+  }
 
   //exists checker method======================
   Future<bool> existUser() async {
@@ -38,6 +52,9 @@ class Constant {
         .then((myUser) {
       if (myUser.exists) {
         me = DataModel.fromJson(myUser.data()!);
+        getNotificationToken();
+
+         Constant.userActiveStatus(true);
       } else {
         createUser().then((value) {
           selfInfo();
@@ -59,7 +76,8 @@ class Constant {
   static Future<void> userActiveStatus(bool isOnline) async {
     await firebaseFirestore.collection("Users").doc(curentUser.uid).update({
       "is_online": isOnline,
-      "last_active": DateTime.now().millisecondsSinceEpoch.toString()
+      "last_active": DateTime.now().millisecondsSinceEpoch.toString(),
+      "push_token": me.pushToken,
     });
   }
 

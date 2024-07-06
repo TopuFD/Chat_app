@@ -30,7 +30,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     Constant.selfInfo();
-    Constant.userActiveStatus(true);
     SystemChannels.lifecycle.setMessageHandler((message) {
       if (Constant.firebaseAuth.currentUser != null) {
         if (message.toString().contains("resume"))
