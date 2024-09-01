@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:my_chat/auth/user.dart';
-import 'package:my_chat/model/data_model.dart';
+import 'package:my_chat/controller/user_controller.dart';
+import 'package:my_chat/model/user_model.dart';
 import 'package:my_chat/view/profile_screen.dart';
 import 'package:my_chat/widgets/user_card.dart';
 
@@ -29,13 +29,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    Constant.selfInfo();
+    UserController.selfInfo();
     SystemChannels.lifecycle.setMessageHandler((message) {
-      if (Constant.firebaseAuth.currentUser != null) {
+      if (UserController.firebaseAuth.currentUser != null) {
         if (message.toString().contains("resume"))
-          Constant.userActiveStatus(true);
+          UserController.userActiveStatus(true);
         if (message.toString().contains("pause"))
-          Constant.userActiveStatus(false);
+          UserController.userActiveStatus(false);
       }
       return Future.value(message);
     });
@@ -101,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (_) =>
-                                Profile_screen(myUser: Constant.me)));
+                                Profile_screen(myUser: UserController.me)));
                   },
                   icon: Icon(Icons.more_vert)),
             ],
@@ -111,17 +111,12 @@ class _HomeScreenState extends State<HomeScreen> {
             child: RefreshIndicator(
               onRefresh: _refresh,
               child: StreamBuilder(
-                stream: Constant.getAllUser(),
+                stream: UserController.getAllUser(),
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
                     case ConnectionState.none:
                       return Container();
-
-                    // CircularProgressIndicator(
-                    //   color: Colors.blue,
-                    // );
-
                     case ConnectionState.active:
                     case ConnectionState.done:
                       final data = snapshot.data!.docs;

@@ -4,10 +4,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:my_chat/auth/user.dart';
-import 'package:my_chat/model/data_model.dart';
+import 'package:my_chat/controller/user_controller.dart';
+import 'package:my_chat/model/user_model.dart';
 import 'package:my_chat/view/auth_screen/login_screen.dart';
 
 class Profile_screen extends StatefulWidget {
@@ -192,15 +193,12 @@ class _Profile_screenState extends State<Profile_screen> {
         padding: EdgeInsets.all(10.h),
         child: FloatingActionButton.extended(
             onPressed: () async {
-              await Constant.userActiveStatus(false);
-              await Constant.firebaseAuth.signOut().then((value) async {
+              await UserController.userActiveStatus(false);
+              await UserController.firebaseAuth.signOut().then((value) async {
                 await GoogleSignIn().signOut().then((value) {
-                  Navigator.pop(context);
+                  UserController.firebaseAuth = FirebaseAuth.instance;
 
-                  Constant.firebaseAuth = FirebaseAuth.instance;
-
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (_) => LoginScreen()));
+                  Get.offAll(LoginScreen());
                 });
               });
             },
@@ -253,7 +251,7 @@ class _Profile_screenState extends State<Profile_screen> {
                             setState(() {
                               _image = image.path;
                             });
-                            Constant.updatingUserProfile(File(_image!));
+                            UserController.updatingUserProfile(File(_image!));
                             Navigator.pop(context);
                           }
                         },
@@ -271,7 +269,7 @@ class _Profile_screenState extends State<Profile_screen> {
                             setState(() {
                               _image = image.path;
                             });
-                            Constant.updatingUserProfile(File(_image!));
+                            UserController.updatingUserProfile(File(_image!));
                             Navigator.pop(context);
                           }
                         },

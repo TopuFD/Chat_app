@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:my_chat/auth/user.dart';
+import 'package:my_chat/controller/user_controller.dart';
 import 'package:my_chat/helper/my_date_util.dart';
-import 'package:my_chat/model/data_model.dart';
+import 'package:my_chat/model/user_model.dart';
 import 'package:my_chat/model/msg_model.dart';
 import 'package:my_chat/view/user_profile.dart';
 import 'package:my_chat/widgets/message_card.dart';
@@ -88,7 +88,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Padding(
         padding: const EdgeInsets.only(top: 30, bottom: 5),
         child: StreamBuilder(
-            stream: Constant.getUserInfo(widget.chatUser),
+            stream: UserController.getUserInfo(widget.chatUser),
             builder: (context, snapshot) {
               final data = snapshot.data?.docs;
               final list =
@@ -249,7 +249,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             final List<XFile> images =
                                 await _picker.pickMultiImage(imageQuality: 100);
                             for (var i in images) {
-                              Constant.sendChatImage(
+                              UserController.sendChatImage(
                                   widget.chatUser, File(i.path));
                             }
                           },
@@ -263,7 +263,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             final XFile? image = await _picker.pickImage(
                                 source: ImageSource.camera, imageQuality: 100);
                             if (image != null) {
-                              Constant.sendChatImage(
+                              UserController.sendChatImage(
                                   widget.chatUser, File(image.path));
                             }
                           },
@@ -294,11 +294,9 @@ class _ChatScreenState extends State<ChatScreen> {
                           child: IconButton(
                             onPressed: () {
                               if (isShowEmoji.value) {
-                                // Hide emoji picker
                                 isShowEmoji.value = false;
                                 FocusScope.of(context).requestFocus(_focusNode);
                               } else {
-                                // Show emoji picker and hide keyboard
                                 isShowEmoji.value = true;
                                 FocusScope.of(context).unfocus();
                               }
@@ -325,7 +323,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ? IconButton(
                   onPressed: () {
                     if (_controller.text.isNotEmpty) {
-                      Constant.sendMessage(
+                      UserController.sendMessage(
                           widget.chatUser, _controller.text, Type.text);
                       _controller.clear();
                       isText.value = false;
@@ -351,7 +349,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
       child: StreamBuilder(
-        stream: Constant.getAllMsg(widget.chatUser),
+        stream: UserController.getAllMsg(widget.chatUser),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:

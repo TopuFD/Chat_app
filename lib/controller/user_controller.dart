@@ -3,23 +3,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:my_chat/model/data_model.dart';
+import 'package:my_chat/model/user_model.dart';
 import 'package:my_chat/model/msg_model.dart';
 
-class Constant {
-  // get authontication
+class UserController {
+  // get authontication=======================>
   static FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   //save data to database
   static FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
-  // store image, vedio, any file
+  // store image, vedio, any file=====================>
   static FirebaseStorage firebaseStorage = FirebaseStorage.instance;
   static late DataModel me;
 
-  //current user
+  //current user==============================>
   static final curentUser = firebaseAuth.currentUser!;
 
-  // for push notification instace
+  // for push notification instace===========================>
   static FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   var docTime;
@@ -54,7 +54,7 @@ class Constant {
         me = DataModel.fromJson(myUser.data()!);
         getNotificationToken();
 
-         Constant.userActiveStatus(true);
+         userActiveStatus(true);
       } else {
         createUser().then((value) {
           selfInfo();

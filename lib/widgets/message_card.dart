@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:my_chat/auth/user.dart';
+import 'package:my_chat/controller/user_controller.dart';
 import 'package:my_chat/helper/my_date_util.dart';
-import 'package:my_chat/model/data_model.dart';
+import 'package:my_chat/model/user_model.dart';
 import 'package:my_chat/model/msg_model.dart';
 
 class AllMessage extends StatefulWidget {
@@ -18,7 +18,7 @@ class AllMessage extends StatefulWidget {
 class _AllMessageState extends State<AllMessage> {
   @override
   Widget build(BuildContext context) {
-    return Constant.curentUser.uid == widget.message.fromId
+    return UserController.curentUser.uid == widget.message.fromId
         ? Padding(
             padding: EdgeInsets.only(bottom: 20.h),
             child: greenMessage(),
@@ -29,7 +29,7 @@ class _AllMessageState extends State<AllMessage> {
   // another user message
   Widget blueMessage() {
     if (widget.message.read.isEmpty) {
-      Constant.checkingReadStatus(widget.message);
+      UserController.checkingReadStatus(widget.message);
     }
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -150,7 +150,7 @@ class _AllMessageState extends State<AllMessage> {
                         ),
                 ),
               ),
-              // show the toId image if The text is read
+              //check read of unred message================================>
               widget.message.read.isNotEmpty
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(100),

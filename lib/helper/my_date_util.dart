@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class MyDateUtil {
-  // getting formated time=============
+  // getting formated time==========================================>
   static String getFormatedTime(
       {required BuildContext context, required String time}) {
     final date = DateTime.fromMillisecondsSinceEpoch(int.parse(time));
     return TimeOfDay.fromDateTime(date).format(context);
   }
 
-  // getting chating last time=============
+  // getting chating last time======================================>
   static String getlastChatTime(
       {required BuildContext context, required String time}) {
     final DateTime sendTime =
@@ -22,7 +22,7 @@ class MyDateUtil {
     return "${sendTime.day} ${getMonth(sendTime)}";
   }
 
-  //get user last active time=======================>
+  //get user last active time======================================>
   static String getLastActiveTime(
       {required BuildContext context, required String lastActive}) {
     final int i = int.tryParse(lastActive) ?? -1;

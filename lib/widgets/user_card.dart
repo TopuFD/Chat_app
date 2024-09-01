@@ -1,9 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:my_chat/auth/user.dart';
+import 'package:my_chat/controller/user_controller.dart';
 import 'package:my_chat/helper/my_date_util.dart';
-import 'package:my_chat/model/data_model.dart';
+import 'package:my_chat/model/user_model.dart';
 import 'package:my_chat/model/msg_model.dart';
 import 'package:my_chat/view/chat_screen.dart';
 
@@ -31,7 +30,7 @@ class _MyUserCardState extends State<MyUserCard> {
                     builder: (_) => ChatScreen(chatUser: widget.myUser)));
           },
           child: StreamBuilder(
-              stream: Constant.getLastMsg(widget.myUser),
+              stream: UserController.getLastMsg(widget.myUser),
               builder: (context, snapshot) {
                 final data = snapshot.data?.docs;
                 final list =
@@ -43,31 +42,32 @@ class _MyUserCardState extends State<MyUserCard> {
 
                 return ListTile(
                     leading: ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            child: Stack(
-                              children: [
-                                Image.network(
-                                  height: mq.height * .06,
-                        width: mq.height * .06,
-                                  widget.myUser.image,
-                                  fit: BoxFit.fill,
-                                  filterQuality: FilterQuality.high,
-                                ),
-                                Positioned(
-                                    bottom: 3.h,
-                                    right: 5.w,
-                                    child:  widget.myUser.isOnline?Container(
-                                      padding: EdgeInsets.all(5),
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.green,
-                                        border: Border.all(
-                                            color: Colors.white,
-                                            width: 2),
-                                      ),
-                                    ):SizedBox())
-                              ],
-                            )),
+                        borderRadius: BorderRadius.circular(100),
+                        child: Stack(
+                          children: [
+                            Image.network(
+                              height: mq.height * .06,
+                              width: mq.height * .06,
+                              widget.myUser.image,
+                              fit: BoxFit.fill,
+                              filterQuality: FilterQuality.high,
+                            ),
+                            Positioned(
+                                bottom: 3.h,
+                                right: 5.w,
+                                child: widget.myUser.isOnline
+                                    ? Container(
+                                        padding: EdgeInsets.all(5),
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.green,
+                                          border: Border.all(
+                                              color: Colors.white, width: 2),
+                                        ),
+                                      )
+                                    : SizedBox())
+                          ],
+                        )),
                     title: Text(
                       widget.myUser.name,
                       style: TextStyle(
@@ -92,7 +92,7 @@ class _MyUserCardState extends State<MyUserCard> {
                     trailing: message == null
                         ? null
                         : message!.read.isEmpty &&
-                                message!.fromId != Constant.curentUser.uid
+                                message!.fromId != UserController.curentUser.uid
                             ? Container(
                                 height: 15.h,
                                 width: 15.h,
@@ -101,24 +101,23 @@ class _MyUserCardState extends State<MyUserCard> {
                                     borderRadius: BorderRadius.circular(50)),
                               )
                             : Text(
-                                    list.isNotEmpty
-                                        ? widget.myUser.isOnline
-                                            ? "Active now"
-                                            : MyDateUtil.getLastActiveTime(
-                                                context: context,
-                                                lastActive:
-                                                    widget.myUser.lastActive)
+                                list.isNotEmpty
+                                    ? widget.myUser.isOnline
+                                        ? "Active now"
                                         : MyDateUtil.getLastActiveTime(
                                             context: context,
                                             lastActive:
-                                                widget.myUser.lastActive),
-                                    style: TextStyle(
-                                        fontSize: 10.sp,
-                                        color: Colors.black54,
-                                        fontWeight: FontWeight.normal),
-                                    overflow: TextOverflow.clip,
-                                    maxLines: 1,
-                                  ));
+                                                widget.myUser.lastActive)
+                                    : MyDateUtil.getLastActiveTime(
+                                        context: context,
+                                        lastActive: widget.myUser.lastActive),
+                                style: TextStyle(
+                                    fontSize: 10.sp,
+                                    color: Colors.black54,
+                                    fontWeight: FontWeight.normal),
+                                overflow: TextOverflow.clip,
+                                maxLines: 1,
+                              ));
               })),
     );
   }

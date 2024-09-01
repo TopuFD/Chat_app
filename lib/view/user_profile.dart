@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_chat/helper/my_date_util.dart';
-import 'package:my_chat/model/data_model.dart';
+import 'package:my_chat/model/user_model.dart';
 
 class UserProfileScreen extends StatefulWidget {
   final DataModel otherUser;
